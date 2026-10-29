@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="theme-color" content="#0b1020">
+  <title>TeleTele — Painel Telegram</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b1020;--panel:#11182b;--panel2:#151e34;--line:rgba(160,178,218,.12);--text:#eef3ff;--muted:#8491ad;--blue:#638cff;--cyan:#55d6df;--purple:#9274ff;--green:#49d7a0;--red:#ff7185;--shadow:0 24px 70px rgba(0,0,0,.35)}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% 0%,rgba(78,112,213,.14),transparent 36%),radial-gradient(ellipse at 90% 85%,rgba(133,91,255,.10),transparent 30%),var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;min-height:100vh}button,input,textarea{font:inherit}button{cursor:pointer}
+    .hidden{display:none!important}.app-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}.login-card{width:min(100%,460px);padding:42px;background:linear-gradient(145deg,rgba(23,33,57,.96),rgba(15,22,39,.98));border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);position:relative;overflow:hidden}.login-card:before{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(99,140,255,.13);filter:blur(55px);top:-130px;right:-90px}.brand{display:flex;align-items:center;gap:12px;font-family:Manrope,sans-serif;font-weight:800;letter-spacing:-.5px;font-size:20px}.brand-mark{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--purple));display:grid;place-items:center;box-shadow:0 9px 24px #638cff45}.brand-mark svg{width:22px}.eyebrow{color:#91aaff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;margin:34px 0 10px}.login-card h1{font:800 30px/1.2 Manrope,sans-serif;letter-spacing:-1px;margin:0 0 12px}.sub{color:var(--muted);line-height:1.65;font-size:14px;margin:0 0 28px}.field{display:grid;gap:8px;margin:18px 0}.field label{font-size:12px;color:#bdc8df;font-weight:600}.field input,.composer textarea{width:100%;background:#0c1426;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:14px 15px;outline:none;transition:.2s}.field input:focus,.composer textarea:focus{border-color:#7195ff;box-shadow:0 0 0 3px #638cff20}.primary{border:0;color:white;font-weight:700;background:linear-gradient(110deg,#557ff2,#8065ee);border-radius:12px;padding:14px 18px;box-shadow:0 10px 24px #638cff30;transition:.2s}.primary:hover{transform:translateY(-1px);filter:brightness(1.08)}.wide{width:100%}.hint{font-size:11px;color:#74819d;text-align:center;margin-top:20px}.error{color:var(--red);font-size:12px;min-height:18px;margin-top:10px}.step-note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6}
+    .dashboard{min-height:100vh;padding:22px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;max-width:1600px;margin:auto}.sidebar,.main-panel{background:rgba(17,24,43,.86);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);min-width:0}.sidebar{padding:22px 17px;display:flex;flex-direction:column;min-height:calc(100vh - 44px)}.sidebar .brand{padding:0 7px 25px;border-bottom:1px solid var(--line)}.side-label{font-size:10px;color:#697895;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin:25px 9px 12px}.nav-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:11px;color:#aab6cf;font-size:13px}.nav-item.active{color:#eaf0ff;background:linear-gradient(90deg,#638cff25,#9274ff13);border:1px solid #7898ff24}.nav-icon{width:19px;text-align:center;font-size:16px}.sidebar-bottom{margin-top:auto}.connection-card{background:#0d1629;border:1px solid var(--line);padding:15px;border-radius:14px}.connection-top{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700}.dot{width:8px;height:8px;border-radius:50%;background:#68748d;display:inline-block;margin-right:7px}.dot.online{background:var(--green);box-shadow:0 0 12px #49d7a0}.connection-meta{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5}.logout{width:100%;margin-top:12px;background:transparent;border:1px solid var(--line);color:#aebbd5;padding:11px;border-radius:10px;font-size:12px}.main-panel{display:flex;flex-direction:column;min-height:calc(100vh - 44px);overflow:hidden}.topbar{padding:21px 27px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:16px}.page-title{font:700 19px Manrope,sans-serif}.page-sub{font-size:11px;color:var(--muted);margin-top:5px}.top-actions{display:flex;align-items:center;gap:10px}.pill{padding:8px 11px;border:1px solid var(--line);border-radius:30px;color:#aebbd5;font-size:11px;white-space:nowrap}.pill .dot{margin-right:6px}.avatar{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#638cff,#9274ff);display:grid;place-items:center;font-weight:800;font-size:13px}.content{padding:23px 27px;display:flex;flex-direction:column;flex:1;min-height:0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:20px}.stat{background:#0d1629;border:1px solid var(--line);padding:14px 16px;border-radius:14px}.stat-label{font-size:10px;color:var(--muted)}.stat-value{font:700 17px Manrope,sans-serif;margin-top:5px}.chat-head{display:flex;align-items:center;justify-content:space-between;margin:3px 0 14px}.chat-name{font:700 14px Manrope,sans-serif}.chat-status{font-size:11px;color:var(--green);margin-top:4px}.messages{flex:1;min-height:250px;max-height:calc(100vh - 360px);overflow-y:auto;padding:18px 4px;display:flex;flex-direction:column;gap:13px;scroll-behavior:smooth}.empty{margin:auto;text-align:center;color:var(--muted);max-width:280px}.empty-icon{width:58px;height:58px;margin:0 auto 15px;border-radius:19px;background:#638cff18;display:grid;place-items:center;font-size:25px}.empty strong{display:block;color:#dce5fa;font-size:14px;margin-bottom:7px}.empty p{font-size:12px;line-height:1.6}.message{max-width:min(76%,620px);align-self:flex-start}.message.out{align-self:flex-end}.bubble{padding:12px 15px;border-radius:15px 15px 15px 5px;background:#19243c;border:1px solid var(--line);font-size:13px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}.out .bubble{background:linear-gradient(135deg,#355bc0,#5849a9);border:0;border-radius:15px 15px 5px 15px}.time{font-size:9px;color:#8290ac;margin:5px 4px 0}.out .time{text-align:right}.message img{max-width:100%;max-height:300px;border-radius:10px;display:block;margin-bottom:8px}.bot-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;margin-top:9px}.bot-buttons button{background:#172b4b;border:1px solid #638cff50;color:#bcd0ff;border-radius:9px;padding:10px;font-size:11px}.bot-buttons button:hover{background:#223b68}.composer-wrap{border-top:1px solid var(--line);padding:17px 0 0}.composer{display:flex;gap:10px;align-items:flex-end;background:#0c1426;border:1px solid var(--line);border-radius:15px;padding:9px}.composer textarea{background:transparent;border:0;box-shadow:none!important;resize:none;min-height:42px;max-height:120px;padding:10px;font-size:13px}.attach{width:40px;height:40px;flex:0 0 40px;border:0;background:#19243c;color:#aebfe4;border-radius:11px;font-size:18px}.send{width:42px;height:42px;flex:0 0 42px;border:0;border-radius:11px;background:linear-gradient(135deg,#638cff,#9274ff);color:white;font-size:17px}.composer-foot{display:flex;justify-content:space-between;color:#697895;font-size:10px;padding:9px 4px 0}.toast{position:fixed;right:24px;bottom:24px;background:#17243b;border:1px solid var(--line);box-shadow:var(--shadow);padding:13px 17px;border-radius:12px;font-size:12px;z-index:20;max-width:calc(100% - 40px)}.toast.bad{border-color:#ff718566;color:#ff9aaa}.modal-bg{position:fixed;inset:0;background:#050916cc;display:grid;place-items:center;padding:20px;z-index:10}.modal{width:min(100%,420px);background:#141e34;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:var(--shadow)}.modal h2{font:700 19px Manrope;margin:0 0 8px}.modal p{font-size:12px;color:var(--muted);line-height:1.6}.modal .field{margin:20px 0}
+    @media(max-width:900px){.dashboard{grid-template-columns:1fr;padding:13px;gap:12px}.sidebar{min-height:auto;padding:13px 15px}.sidebar .brand{padding:0 3px 12px;border:0}.sidebar .side-label,.sidebar .nav-item,.sidebar-bottom{display:none}.main-panel{min-height:calc(100vh - 104px)}.content{padding:18px}.topbar{padding:17px 18px}.messages{max-height:calc(100vh - 390px)}}
+    @media(max-width:560px){.app-shell{padding:14px}.login-card{padding:28px 23px;border-radius:20px}.login-card h1{font-size:26px}.dashboard{padding:8px}.sidebar{border-radius:16px}.main-panel{border-radius:16px;min-height:calc(100vh - 88px)}.topbar{padding:15px}.page-title{font-size:16px}.pill{font-size:10px;padding:7px}.content{padding:14px}.stats{gap:7px}.stat{padding:11px 9px}.stat-label{font-size:9px}.stat-value{font-size:14px}.messages{max-height:calc(100vh - 385px);padding:12px 1px}.message{max-width:88%}.composer-wrap{padding-top:12px}.composer-foot{font-size:9px}.top-actions .pill:first-child{display:none}}
+  </style>
+</head>
+<body>
+  <section class="app-shell" id="accessScreen">
+    <div class="login-card">
+      <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="m4 11 15-6-5.7 15-2.5-6.1L4 11Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="m10.8 13.9 4.4-4.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>TeleTele</div>
+      <div class="eyebrow">Área reservada</div>
+      <h1>Bem-vindo de volta.</h1>
+      <p class="sub">Acede ao teu painel privado para gerir a comunicação com o bot Telegram de forma simples e segura.</p>
+      <form id="accessForm">
+        <div class="field"><label for="appPassword">Palavra-passe de acesso</label><input id="appPassword" type="password" placeholder="Introduz a tua palavra-passe" autocomplete="current-password" required></div>
+        <button class="primary wide" type="submit">Entrar no painel <span>→</span></button>
+        <div class="error" id="accessError"></div>
+      </form>
+      <div class="hint">Ligação protegida · Acesso privado</div>
+    </div>
+  </section>
+
+  <main class="dashboard hidden" id="dashboard">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="m4 11 15-6-5.7 15-2.5-6.1L4 11Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/></svg></div>TeleTele</div>
+      <div class="side-label">Workspace</div>
+      <div class="nav-item active"><span class="nav-icon">▤</span> Conversas</div>
+      <div class="nav-item"><span class="nav-icon">◉</span> Integração Telegram</div>
+      <div class="nav-item"><span class="nav-icon">⚙</span> Definições</div>
+      <div class="sidebar-bottom">
+        <div class="side-label">Estado do serviço</div>
+        <div class="connection-card">
+          <div class="connection-top"><span><i class="dot" id="sideDot"></i><span id="sideStatus">Desconectado</span></span><span>●</span></div>
+          <div class="connection-meta" id="sideMeta">Liga a tua conta Telegram para começar a receber mensagens.</div>
+        </div>
+        <button class="logout" id="logoutBtn">↪ Terminar sessão</button>
+      </div>
+    </aside>
+
+    <section class="main-panel">
+      <header class="topbar">
+        <div><div class="page-title">Centro de mensagens</div><div class="page-sub">Acompanha e responde às mensagens do teu bot.</div></div>
+        <div class="top-actions"><div class="pill"><i class="dot" id="topDot"></i><span id="topStatus">A aguardar ligação</span></div><div class="avatar">TT</div></div>
+      </header>
+      <div class="content">
+        <div class="stats">
+          <div class="stat"><div class="stat-label">Ligação Telegram</div><div class="stat-value" id="statConnection">Inativa</div></div>
+          <div class="stat"><div class="stat-label">Mensagens carregadas</div><div class="stat-value" id="statMessages">—</div></div>
+          <div class="stat"><div class="stat-label">Tempo de sessão</div><div class="stat-value" id="statTimer">—</div></div>
+        </div>
+        <div class="chat-head"><div><div class="chat-name" id="botName">Bot Telegram</div><div class="chat-status" id="chatStatus">● Aguardando autenticação</div></div><div class="pill">● Canal privado</div></div>
+        <div class="messages" id="messages">
+          <div class="empty"><div class="empty-icon">✦</div><strong>A tua conversa começa aqui</strong><p>Autentica a tua conta Telegram para carregar o histórico e começar a conversar com o bot.</p></div>
+        </div>
+        <div class="composer-wrap">
+          <form class="composer" id="sendForm">
+            <input type="file" id="imageFile" accept="image/*" hidden>
+            <button class="attach" type="button" id="attachBtn" title="Enviar imagem">＋</button>
+            <textarea id="messageInput" rows="1" placeholder="Escreve uma mensagem..." disabled></textarea>
+            <button class="send" type="submit" title="Enviar mensagem" disabled id="sendBtn">➤</button>
+          </form>
+          <div class="composer-foot"><span>Enter para enviar · Shift + Enter para nova linha</span><span id="fileName">Mensagens protegidas</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-bg hidden" id="telegramModal">
+    <div class="modal">
+      <div class="brand"><div class="brand-mark">✦</div>Ligação Telegram</div>
+      <h2 id="modalTitle" style="margin-top:22px">Liga a tua conta</h2>
+      <p id="modalDescription">Introduz o número associado à tua conta Telegram no formato internacional.</p>
+      <form id="telegramForm">
+        <div class="field"><label id="telegramLabel" for="telegramInput">Número de telefone</label><input id="telegramInput" placeholder="+244923456789" autocomplete="off" required></div>
+        <div class="error" id="telegramError"></div>
+        <button class="primary wide" type="submit" id="telegramSubmit">Enviar código →</button>
+      </form>
+      <div class="step-note">A autenticação é processada diretamente pelo Telegram. A tua sessão termina automaticamente após o período configurado.</div>
+    </div>
+  </div>
+  <div class="toast hidden" id="toast"></div>
+
+<script>
+(() => {
+  const $ = sel => document.getElementById(sel) || document.querySelector(sel);
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+  let authStep = 'phone', authenticated = false, messages = [], remaining = 0, poller = null, timer = null, selectedFile = null;
+  const api = async (url, options={}) => {
+    const headers = {'X-CSRFToken': csrf, ...(options.headers||{})};
+    if(options.body && !(options.body instanceof FormData)) headers['Content-Type']='application/json';
+    const res = await fetch(url,{...options,headers,credentials:'same-origin'});
+    const data = await res.json().catch(()=>({ok:false,error:'Resposta inválida do servidor.'}));
+    if(!res.ok || data.ok===false) throw new Error(data.error || 'Ocorreu um erro.');
+    return data;
+  };
+  function toast(message,bad=false){$('toast').textContent=message;$('toast').className='toast'+(bad?' bad':'');setTimeout(()=>$('toast').classList.add('hidden'),3500)}
+  function setConnected(value){
+    authenticated=value;
+    ['sideDot','topDot'].forEach(id=>$(id).classList.toggle('online',value));
+    $('sideStatus').textContent=value?'Ligado':'Desconectado';
+    $('topStatus').textContent=value?'Telegram conectado':'A aguardar ligação';
+    $('statConnection').textContent=value?'Ativa':'Inativa';
+    $('chatStatus').textContent=value?'● Ligação ativa':'● Aguardando autenticação';
+    $('chatStatus').style.color=value?'var(--green)':'var(--muted)';
+    $('sideMeta').textContent=value?'A receber mensagens do bot.':'Liga a tua conta Telegram para começar.';
+    $('messageInput').disabled=!value;$('sendBtn').disabled=!value;$('attachBtn').disabled=!value;
+  }
+  function showDashboard(){ $('accessScreen').classList.add('hidden');$('dashboard').classList.remove('hidden'); }
+  function openTelegramModal(step='phone'){
+    authStep=step;const cfg={
+      phone:['Liga a tua conta','Introduz o número associado à tua conta Telegram no formato internacional.','Número de telefone','+244923456789','Enviar código →','tel'],
+      code:['Confirma o teu acesso','Introduz o código de confirmação que recebeste no Telegram.','Código de confirmação','12345','Verificar código →','text'],
+      password:['Verificação em dois passos','A tua conta tem uma palavra-passe adicional de segurança.','Palavra-passe Telegram','Introduz a tua palavra-passe','Confirmar acesso →','password']
+    }[step];
+    $('modalTitle').textContent=cfg[0];$('modalDescription').textContent=cfg[1];$('telegramLabel').textContent=cfg[2];$('telegramInput').placeholder=cfg[3];$('telegramInput').type=cfg[5];$('telegramInput').value='';$('telegramSubmit').textContent=cfg[4];$('telegramError').textContent='';$('telegramModal').classList.remove('hidden');setTimeout(()=>$('telegramInput').focus(),100);
+  }
+  function closeTelegramModal(){$('telegramModal').classList.add('hidden')}
+  $('accessForm').addEventListener('submit',async e=>{
+    e.preventDefault();$('accessError').textContent='';
+    try{await api('/api/access',{method:'POST',body:JSON.stringify({password:$('appPassword').value})});showDashboard();await refreshState();}
+    catch(err){$('accessError').textContent=err.message;}
+  });
+  $('telegramForm').addEventListener('submit',async e=>{
+    e.preventDefault();const value=$('telegramInput').value.trim();$('telegramError').textContent='';$('telegramSubmit').disabled=true;
+    try{
+      if(authStep==='phone'){const sanitizedPhone=value.replace(/[\s\-()]/g,'');const d=await api('/api/telegram/phone',{method:'POST',body:JSON.stringify({phone:sanitizedPhone})});if(d.status==='authenticated'){closeTelegramModal();await refreshState();}else openTelegramModal('code');}
+      else if(authStep==='code'){const d=await api('/api/telegram/code',{method:'POST',body:JSON.stringify({code:value})});if(d.status==='password_required')openTelegramModal('password');else{closeTelegramModal();await refreshState();}}
+      else{await api('/api/telegram/password',{method:'POST',body:JSON.stringify({password:value})});closeTelegramModal();await refreshState();}
+    }catch(err){$('telegramError').textContent=err.message;}
+    finally{$('telegramSubmit').disabled=false;}
+  });
+  async function refreshState(){
+    try{
+      const d=await api('/api/state');$('botName').textContent=d.bot||'Bot Telegram';
+      if(d.authenticated){setConnected(true);remaining=d.remaining_seconds||0;$('statTimer').textContent=formatTime(remaining);$('sideMeta').textContent='Sessão ativa · termina automaticamente.';await loadMessages();}
+      else{setConnected(false);remaining=0;$('statTimer').textContent='—';if(d.password_required)openTelegramModal('password');else if(!$('telegramModal').classList.contains('hidden')===false)openTelegramModal('phone');}
+    }catch(err){if(err.message.includes('Inicia sessão')){location.reload();}else toast(err.message,true);}
+  }
+  function formatTime(s){return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
+  async function loadMessages(){
+    try{const d=await api('/api/messages');const next=d.messages||[];if(JSON.stringify(next)!==JSON.stringify(messages)){messages=next;renderMessages();}$('statMessages').textContent=messages.length;}
+    catch(err){if(authenticated)toast(err.message,true);}
+  }
+  function renderMessages(){
+    const box=$('messages');box.innerHTML='';
+    if(!messages.length){box.innerHTML='<div class="empty"><div class="empty-icon">✦</div><strong>Sem mensagens por enquanto</strong><p>Quando o bot enviar uma mensagem, ela aparecerá aqui.</p></div>';return;}
+    messages.forEach(m=>{
+      const item=document.createElement('div');item.className='message'+(m.outgoing?' out':'');
+      const bubble=document.createElement('div');bubble.className='bubble';
+      if(m.media){const img=document.createElement('img');img.src=m.media;img.alt='Imagem enviada';bubble.appendChild(img);}
+      if(m.text){const text=document.createElement('div');text.textContent=m.text;bubble.appendChild(text);}
+      if(m.buttons&&m.buttons.length){const grid=document.createElement('div');grid.className='bot-buttons';m.buttons.forEach(row=>row.forEach(btn=>{const b=document.createElement('button');b.textContent=btn.text;b.addEventListener('click',async()=>{if(btn.url){window.open(btn.url,'_blank','noopener');return;}try{await api('/api/click',{method:'POST',body:JSON.stringify({message_id:m.id,row:btn.row,col:btn.col})});await loadMessages();}catch(err){toast(err.message,true);}});grid.appendChild(b);}));bubble.appendChild(grid);}
+      item.appendChild(bubble);const time=document.createElement('div');time.className='time';time.textContent=new Date(m.date*1000).toLocaleString('pt-PT',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'});item.appendChild(time);box.appendChild(item);
+    });box.scrollTop=box.scrollHeight;
+  }
+  $('sendForm').addEventListener('submit',async e=>{
+    e.preventDefault();const text=$('messageInput').value.trim();if(!text)return;
+    $('sendBtn').disabled=true;
+    try{await api('/api/send',{method:'POST',body:JSON.stringify({text})});$('messageInput').value='';await loadMessages();}
+    catch(err){toast(err.message,true);}finally{$('sendBtn').disabled=!authenticated;}
+  });
+  $('messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('sendForm').requestSubmit();}});
+  $('attachBtn').addEventListener('click',()=>$('imageFile').click());
+  $('imageFile').addEventListener('change',e=>{
+    selectedFile=e.target.files[0]||null;$('fileName').textContent=selectedFile?selectedFile.name:'Mensagens protegidas';
+    if(!selectedFile)return;
+    const caption=prompt('Adicionar uma legenda à imagem (opcional):')||'';
+    const data=new FormData();data.append('image',selectedFile);data.append('caption',caption);
+    api('/api/upload',{method:'POST',body:data}).then(()=>{toast('Imagem enviada com sucesso.');selectedFile=null;$('imageFile').value='';$('fileName').textContent='Mensagens protegidas';loadMessages();}).catch(err=>toast(err.message,true));
+  });
+  $('logoutBtn').addEventListener('click',async()=>{
+    try{if(authenticated)await api('/api/logout',{method:'POST',body:JSON.stringify({})});await api('/api/access/logout',{method:'POST',body:JSON.stringify({})});location.reload();}
+    catch(err){toast(err.message,true);}
+  });
+  $('telegramModal').addEventListener('click',e=>{if(e.target===$('telegramModal')&&authStep==='phone')closeTelegramModal();});
+  timer=setInterval(()=>{if(authenticated&&remaining>0){remaining--;$('statTimer').textContent=formatTime(remaining);if(remaining===0){setConnected(false);toast('A sessão Telegram expirou.');openTelegramModal('phone');}}},1000);
+  poller=setInterval(()=>{if(authenticated){loadMessages();refreshState();}},4000);
+  // Valida o estado de autenticação ao carregar a página
+  (async () => {
+    try {
+      const d = await api('/api/state');
+      if (d.ok) {
+        showDashboard();
+        await refreshState();
+      }
+    } catch (_) {
+      // accessScreen já se encontra visível por omissão
+    }
+  })();
+})();
+</script>
+</body>
+</html>
