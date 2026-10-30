@@ -36,7 +36,7 @@ APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
 SECRET_KEY = os.environ.get("SECRET_KEY", "")
 SESSION_NAME = os.environ.get("SESSION_NAME", "web_telegram_session")
 SESSION_MINUTES = int(os.environ.get("SESSION_MINUTES", "25"))
-HOST = os.environ.get("HOST", "127.0.0.1")
+HOST = os.environ.get("HOST", "0.0.0.0")
 PORT = int(os.environ.get("PORT", "5000"))
 
 if not API_ID or not API_HASH or not APP_PASSWORD or not SECRET_KEY:
@@ -107,7 +107,37 @@ def require_web_login(fn):
     return wrapper
 
 
+def telegram_worker():
+    global telegram_loop
+    if telegram_loop.is_closed():
+        telegram_loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(telegram_loop)
+    telegram_loop.run_forever()
+
+
+def start_telegram_worker():
+    global telegram_thread, telegram_loop
+    with state_lock:
+        if telegram_loop.is_closed():
+            telegram_loop = asyncio.new_event_loop()
+        if not telegram_loop.is_running():
+            telegram_thread = threading.Thread(
+                target=telegram_worker, daemon=True, name="TelegramWorker"
+            )
+            telegram_thread.start()
+
+
+# Inicia a thread do Telegram no arranque da aplicação (funciona em Gunicorn, Render, etc.)
+start_telegram_worker()
+
+
 def run_telegram(coro, timeout=45):
+    if not telegram_loop.is_running():
+        start_telegram_worker()
+        start_wait = time.time()
+        while not telegram_loop.is_running() and (time.time() - start_wait < 3):
+            time.sleep(0.05)
+
     if not telegram_loop.is_running():
         coro.close()
         raise RuntimeError("O serviço Telegram não está iniciado.")
@@ -297,17 +327,6 @@ async def verify_2fa(password):
     return {"status": "authenticated"}
 
 
-def telegram_worker():
-    asyncio.set_event_loop(telegram_loop)
-    telegram_loop.run_forever()
-
-
-def start_telegram_worker():
-    global telegram_thread
-    telegram_thread = threading.Thread(
-        target=telegram_worker, daemon=True
-    )
-    telegram_thread.start()
 
 
 # =====================================================
