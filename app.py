@@ -29,13 +29,13 @@ load_dotenv(BASE_DIR / ".env", override=True)
 MEDIA_DIR = BASE_DIR / "media"
 MEDIA_DIR.mkdir(exist_ok=True)
 
-API_ID = int(os.environ.get("API_ID", "0"))
-API_HASH = os.environ.get("API_HASH", "")
-BOT_USERNAME = os.environ.get("BOT_USERNAME", "Dlaylama_bot")
-APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
-SECRET_KEY = os.environ.get("SECRET_KEY", "")
-SESSION_NAME = os.environ.get("SESSION_NAME", "web_telegram_session")
-SESSION_MINUTES = int(os.environ.get("SESSION_MINUTES", "25"))
+API_ID = int(str(os.environ.get("API_ID", "0")).strip().strip('"\'') or "0")
+API_HASH = str(os.environ.get("API_HASH", "")).strip().strip('"\'')
+BOT_USERNAME = str(os.environ.get("BOT_USERNAME", "Dlaylama_bot")).strip().strip('"\'').lstrip("@")
+APP_PASSWORD = str(os.environ.get("APP_PASSWORD", "")).strip().strip('"\'')
+SECRET_KEY = str(os.environ.get("SECRET_KEY", "")).strip().strip('"\'')
+SESSION_NAME = str(os.environ.get("SESSION_NAME", "web_telegram_session")).strip().strip('"\'')
+SESSION_MINUTES = int(str(os.environ.get("SESSION_MINUTES", "25")).strip().strip('"\'') or "25")
 HOST = os.environ.get("HOST", "0.0.0.0")
 PORT = int(os.environ.get("PORT", "5000"))
 
@@ -63,6 +63,13 @@ csrf = CSRFProtect(app)
 @app.errorhandler(CSRFError)
 def handle_csrf_error(e):
     return jsonify(ok=False, error=f"Erro de validação CSRF: {e.description}"), 400
+
+
+@app.errorhandler(Exception)
+def handle_unexpected_error(e):
+    code = getattr(e, "code", 500)
+    msg = getattr(e, "description", str(e))
+    return jsonify(ok=False, error=str(msg)), code
 
 # O loop asyncio e o cliente Telegram vivem numa thread dedicada.
 telegram_loop = asyncio.new_event_loop()

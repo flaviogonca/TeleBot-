@@ -103,7 +103,14 @@
     const headers = {'X-CSRFToken': csrf, ...(options.headers||{})};
     if(options.body && !(options.body instanceof FormData)) headers['Content-Type']='application/json';
     const res = await fetch(url,{...options,headers,credentials:'same-origin'});
-    const data = await res.json().catch(()=>({ok:false,error:'Resposta inválida do servidor.'}));
+    const rawText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (_) {
+      const cleanMsg = rawText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      throw new Error(`Erro ${res.status}: ${cleanMsg.slice(0, 100) || 'Resposta não-JSON do servidor.'}`);
+    }
     if(!res.ok || data.ok===false) throw new Error(data.error || 'Ocorreu um erro.');
     return data;
   };
